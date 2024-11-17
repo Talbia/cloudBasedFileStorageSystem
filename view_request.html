@@ -1,0 +1,131 @@
+{% extends 'frame.html' %}
+{% block body %}
+
+    <style>
+        div {
+            font-family: 'Gill Sans MT';
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #dee2e6;
+        }
+        
+        h4 {
+            font-weight: 700;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .table thead th {
+            font-weight: 500;
+        }
+
+        h2{
+            font-family: Ink Free;
+            font-weight: bold;
+        }
+    </style>
+
+<div class="row">
+            <div class="col-md-3 sidebar pt-4">
+                <h2>Group 4's Cloud</h2>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/view_request">Requests</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/view_download">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="#">Trash</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="#">Settings</a>
+                    </li>
+                    {% if 'username' in session %}
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/logout">Log Out</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/login_user">Sign in</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="col-md-9 main-content">
+                <h4 class="mb-2 mt-5">Approve or deny download requests</h4>
+                {% if requests %}
+
+                <table class="table table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Filename</th>
+                            <th>Requester</th>
+                            <th>Request Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for request in requests %}
+                        <tr>
+                            <td>{{ request[0] }}</td> 
+                            <td>{{ request[1] }}</td> 
+                            <td>{{ request[2] }}</td> 
+                            <td>{{ request[4] }}</td> 
+                            <td>{{ request[5] }}</td> 
+                            <td>
+                                {% if request[5] == 'Pending' %}
+                                    <form action="{{ url_for('approve_request', request_id=request[0]) }}" method="post">
+                                        <button type="submit" class="btn btn-info btn-sm">Approve</button>
+                                    </form>
+                                    <form action="{{ url_for('deny_request', request_id=request[0]) }}" method="post">
+                                        <button type="submit" class="btn btn-danger btn-sm">Deny</button>
+                                    </form>
+                                {% else %}
+                                    Not require
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+                {% else %}
+                    <p>No request has beeen made this owner.</p>
+                {% endif %}
+            </div>
+    </div>
+
+    
+    
+
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-9">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                            {% for message in messages %}
+                            <div class="alert alert-info" role="alert">
+                                <p>{{ message }}<p>
+                            </div>
+                            {% endfor %}
+                    {% endif %}
+                {% endwith %}               
+            </div>
+            
+
+        </div>
+
+{% endblock %}
+
+

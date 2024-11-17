@@ -1,0 +1,55 @@
+{% extends 'frame.html' %}
+{% block body %}
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+        }
+        .login-form {
+            width: 100%;
+            max-width: 300px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .login-form h2 {
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-align: center;
+        }
+        label, button, a {
+            font-family: 'Gill Sans MT';
+        }
+        h2 {
+            font-family: Ink Free;
+            font-weight: bold;
+        }
+
+    </style>
+
+    <div class="login-form">
+        <h2>Login</h2>
+        <form action="/login_user" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-info">Login</button>
+                <a href="{{ url_for('register_user') }}" class="btn btn-info">Register</a>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+

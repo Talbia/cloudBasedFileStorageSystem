@@ -1,0 +1,155 @@
+{% extends 'frame.html' %}
+{% block body %}
+
+    <style>
+        div {
+            font-family: 'Gill Sans MT';
+
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #dee2e6;
+        }
+        
+        h4 {
+            font-weight: 700;
+        }
+        .main-content {
+            padding: 20px;
+        }
+
+        h2{
+        	font-family: Ink Free;
+        	font-weight: bold;
+        }
+    </style>
+
+        <div class="row">
+            <div class="col-md-3 sidebar pt-4">
+                <h2>Group 4's Cloud</h2>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/view_request">Requests</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/view_download">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="#">Trash</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="#">Settings</a>
+                    </li>
+                    {% if 'username' not in session %}
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/login_user">Sign in</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/logout">Log Out</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="col-md-9 main-content">
+                <h4 class="mb-2 mt-5">Store your files with us, {{username}}</h4>
+					<form method="post" enctype="multipart/form-data" action="/encrypt_sign" class="mb-4">
+					    <div class="input-group">
+					        <div class="custom-file">
+					            <input type="file" name="file" class="custom-file-input" id="inputGroupFile04">
+					            <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+					        </div>
+					        <button class="btn btn-info" type="submit">Upload</button>
+					    </div>
+					</form>
+
+				<div class="input-group mb-3">
+				    <input type="text" id="searchInput" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+				</div>
+
+				<table class="table table-hover">
+				    <thead class="thead-dark">
+				        <tr>
+				            <th>File Name</th>
+				            <th>Owner</th>
+				            <th>Date Uploaded</th>
+				            <th>Action</th>
+				        </tr>
+				    </thead>
+				    <tbody id="fileTableBody">
+				        {% for file in files %}
+				        <tr>
+				            <td>{{ file }}</td>
+				            <td>{{ owner_time[file].owner }}</td>
+				            <td>{{ owner_time[file].uploaded_at }}</td>
+				            <td>
+				                {% if owner_time[file].owner == username %}
+				                    <form action="{{ url_for('delete_file', filename=file) }}" method="post" class="d-inline">
+				                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this file?');">Delete</button>
+				                    </form>
+				                {% else %}
+				                    <form method="post" action="/request_file" class="d-inline">
+				                        <input type="hidden" name="filename" value="{{ file }}">
+				                        <button type="submit" class="btn btn-info btn-sm">Request</button>
+				                    </form>
+				                {% endif %}
+				            </td>
+				        </tr>
+				        {% endfor %}
+				    </tbody>
+				</table>
+            </div>
+    	</div>
+
+    	<div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-9">
+			    {% with messages = get_flashed_messages() %}
+			        {% if messages %}
+			                {% for message in messages %}
+			                <div class="alert alert-info" role="alert">
+							 	<p>{{ message }}<p>
+							</div>
+			                {% endfor %}
+			        {% endif %}
+			    {% endwith %}            	
+            </div>
+    	</div>
+
+
+
+<script>
+    // Add an event listener to the file input to display the file name
+    document.querySelector('.custom-file-input').addEventListener('change', function (e) {
+        var fileName = document.getElementById("inputGroupFile04").files[0].name;
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerText = fileName;
+    });
+</script>
+
+
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        var input = document.getElementById('searchInput').value.toLowerCase();
+        var rows = document.getElementById('fileTableBody').getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var fileName = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
+            var owner = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+
+            if (fileName.indexOf(input) > -1 || owner.indexOf(input) > -1) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    });
+</script>
+
+{% endblock %}
